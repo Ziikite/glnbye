@@ -205,10 +205,15 @@
       <p class="hero-sub">GLN에서의 빛나는 시간을 함께 마무리해요</p>
     </div>
     <div class="info-grid">
-      <div class="info-card">
+      <div class="info-card full">
         <span class="info-icon">📅</span>
         <div class="info-label">Date</div>
-        <div class="info-value">3월 18일<br><span style="font-size:14px;opacity:.7">Tuesday</span></div>
+        <div class="info-value" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <span>3월 18일 <span style="font-size:14px;opacity:.6">(수)</span></span>
+          <span style="color:rgba(255,255,255,.25);font-size:18px">또는</span>
+          <span>3월 19일 <span style="font-size:14px;opacity:.6">(목)</span></span>
+        </div>
+        <div class="info-note">수요조사 결과에 따라 날짜 확정 예정</div>
       </div>
       <div class="info-card">
         <span class="info-icon">🌇</span>
@@ -216,11 +221,10 @@
         <div class="info-value">퇴근 후</div>
         <div class="info-note">시간 추후 확정</div>
       </div>
-      <div class="info-card full">
+      <div class="info-card">
         <span class="info-icon">📍</span>
         <div class="info-label">Venue</div>
-        <div class="info-value">수요조사 후 장소 예약 예정</div>
-        <div class="info-note">여러분의 의견을 반영해서 결정할게요 🙏</div>
+        <div class="info-value">수요조사 후<br>예약 예정</div>
       </div>
     </div>
     <div class="divider"><span></span><em>수요조사에 참여해주세요</em><span></span></div>
@@ -240,9 +244,18 @@
           <input type="text" id="name" placeholder="이름을 입력해주세요" autocomplete="off">
         </div>
         <div class="field">
-          <label>참석 여부</label>
+          <label>가능한 날짜</label>
           <div class="radio-group">
-            <label class="radio-option"><input type="radio" name="attend" value="yes"><span class="radio-dot"></span><span>🙋 참석할게요!</span></label>
+            <label class="radio-option"><input type="radio" name="date" value="18일(수)"><span class="radio-dot"></span><span>📅 3월 18일 (수)</span></label>
+            <label class="radio-option"><input type="radio" name="date" value="19일(목)"><span class="radio-dot"></span><span>📅 3월 19일 (목)</span></label>
+            <label class="radio-option"><input type="radio" name="date" value="둘다가능"><span class="radio-dot"></span><span>✌️ 둘 다 가능</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label>참석 유형</label>
+          <div class="radio-group">
+            <label class="radio-option"><input type="radio" name="attend" value="early"><span class="radio-dot"></span><span>🏃 바로 참석</span></label>
+            <label class="radio-option"><input type="radio" name="attend" value="late"><span class="radio-dot"></span><span>🕐 늦게 합류</span></label>
             <label class="radio-option"><input type="radio" name="attend" value="no"><span class="radio-dot"></span><span>😢 아쉽지만 불참</span></label>
             <label class="radio-option"><input type="radio" name="attend" value="maybe"><span class="radio-dot"></span><span>🤔 미정이에요</span></label>
           </div>
@@ -266,7 +279,7 @@
       <div class="success-screen" id="success">
         <div class="success-emoji">🎊</div>
         <div class="success-title">응답 완료!</div>
-        <p class="success-msg">참여해 주셔서 감사해요 💜<br>수요조사 결과를 바탕으로<br>장소를 확정 후 다시 안내드릴게요!<br><br><span style="color:rgba(255,255,255,.38);font-size:13px;">3월 18일에 만나요 🥂</span></p>
+        <p class="success-msg">참여해 주셔서 감사해요 💜<br>수요조사 결과를 바탕으로<br>날짜·장소 확정 후 다시 안내드릴게요!<br><br><span style="color:rgba(255,255,255,.38);font-size:13px;">곧 만나요 🥂</span></p>
       </div>
     </div>
   </div>
@@ -277,26 +290,35 @@
       <h2>📊 응답 현황</h2>
       <p>수요조사 실시간 결과</p>
     </div>
-
-    <div class="setup-banner" id="setup-banner" style="display:none">
-      <p>⚙️ <strong>Google 스프레드시트 미연결</strong> — 아래 가이드를 따라 Apps Script와 연결하면 모든 기기의 응답이 여기 표시돼요.<br>연결 전까지는 이 기기에 제출된 응답만 보여요.</p>
-    </div>
-
     <div class="refresh-row">
       <button class="btn-refresh" onclick="loadResults()">↻ &nbsp; 새로고침</button>
     </div>
 
-    <div class="summary-grid">
-      <div class="summary-card"><div class="summary-num num-total" id="cnt-total">0</div><div class="summary-label">전체 응답</div></div>
-      <div class="summary-card"><div class="summary-num num-yes" id="cnt-yes">0</div><div class="summary-label">참석 🙋</div></div>
-      <div class="summary-card"><div class="summary-num num-maybe" id="cnt-maybe">0</div><div class="summary-label">미정 🤔</div></div>
+    <!-- 날짜별 참석 현황 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px">
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="chart-title">📅 3월 18일 (수)</div>
+        <div id="date18-list"><p style="font-size:13px;color:rgba(255,255,255,.3);font-family:'Noto Serif KR',serif">-</p></div>
+      </div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="chart-title">📅 3월 19일 (목)</div>
+        <div id="date19-list"><p style="font-size:13px;color:rgba(255,255,255,.3);font-family:'Noto Serif KR',serif">-</p></div>
+      </div>
     </div>
 
+    <!-- 참석 유형별 이름 -->
+    <div class="chart-card">
+      <div class="chart-title">참석 유형별</div>
+      <div id="attend-by-type"></div>
+    </div>
+
+    <!-- 장소 선호도 -->
     <div class="chart-card">
       <div class="chart-title">장소 선호도</div>
       <div id="venue-chart"><p style="font-size:13px;color:rgba(255,255,255,.3);font-family:'Noto Serif KR',serif">아직 데이터가 없어요</p></div>
     </div>
 
+    <!-- 개별 응답 -->
     <div class="response-list" id="response-list">
       <div class="no-data"><span>💌</span>아직 응답이 없어요.<br>수요조사 링크를 공유해보세요!</div>
     </div>
@@ -308,7 +330,7 @@
 <script>
 // ══ CONFIG ══
 // Google Apps Script URL로 교체하세요 (설정 가이드는 README 참고)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZNBjT8Had4gIUyt2-Pf7j75v9hgWXhuaRrXAQqh35ZWnT7ILtiaZEEBt3MngdJxmw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyXOpqBFGSLikQJL_M6CgEFLsXkRz6RZrY1hmjdDJSscK-_yYbvoNr6OrQqz21oxI6/exec';
 const STORAGE_KEY = 'farewell_rsvp_v2';
 
 // ── STARS ──
@@ -357,19 +379,18 @@ function showTab(id){
 // ── SUBMIT ──
 async function submitForm(){
   const name=document.getElementById('name').value.trim();
+  const date=document.querySelector('input[name="date"]:checked');
   const attend=document.querySelector('input[name="attend"]:checked');
   if(!name){flash(document.getElementById('name'));return;}
-  if(!attend){alert('참석 여부를 선택해주세요 😊');return;}
+  if(!date){alert('가능한 날짜를 선택해주세요 😊');return;}
+  if(!attend){alert('참석 유형을 선택해주세요 😊');return;}
   const venues=[...document.querySelectorAll('input[name="venue"]:checked')].map(e=>e.value);
   const message=document.getElementById('message').value.trim();
   const ts=new Date().toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
-  const entry={name,attend:attend.value,venues:venues.join(', '),message,ts};
+  const entry={name,date:date.value,attend:attend.value,venues:venues.join(', '),message,ts};
 
-  // localStorage
   const stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
   stored.push(entry); localStorage.setItem(STORAGE_KEY,JSON.stringify(stored));
-
-  // Google Sheets POST
   await postToSheet(entry);
 
   document.getElementById('rsvp-form').style.display='none';
@@ -379,111 +400,100 @@ async function submitForm(){
 }
 function flash(el){el.style.borderColor='#FF6B9D';el.style.boxShadow='0 0 0 3px rgba(255,107,157,.25)';el.focus();setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},1800);}
 
-// ── SHEET POST (GET 방식으로 우회) ──
+// ── SHEET POST ──
 async function postToSheet(entry){
   try{
     const params=new URLSearchParams({
-      action: 'write',
-      ts:      entry.ts,
-      name:    entry.name,
-      attend:  entry.attend,
-      venues:  entry.venues,
-      message: entry.message
+      action:'write', ts:entry.ts, name:entry.name,
+      date:entry.date||'', attend:entry.attend,
+      venues:entry.venues, message:entry.message
     });
-    await fetch(SCRIPT_URL+'?'+params.toString(), {mode:'no-cors'});
-  }catch(e){ console.warn('POST failed:',e); }
+    await fetch(SCRIPT_URL+'?'+params.toString(),{mode:'no-cors'});
+  }catch(e){console.warn('POST failed:',e);}
 }
 
 // ── RESULTS ──
-const ATTEND_LABEL={yes:'참석 🙋',no:'불참 😢',maybe:'미정 🤔'};
+const ATTEND_LABEL={early:'🏃 바로 참석',late:'🕐 늦게 합류',no:'😢 불참',maybe:'🤔 미정',yes:'🙋 참석'};
 const VENUE_DISPLAY={'맛집 (레스토랑/이자카야)':'🍽️ 맛집','루프탑 바/감성 바':'🌃 루프탑/감성 바','노래방':'🎤 노래방','라운지/칵테일 바':'🍸 라운지/칵테일 바','Erin이 정하는 대로':'😊 Erin에게 맡김'};
 
 async function loadResults(){
-  document.getElementById('setup-banner').style.display='none';
   const list=document.getElementById('response-list');
   list.innerHTML='<div class="no-data"><span style="font-size:32px">⏳</span>불러오는 중...</div>';
-
-  const PROXY='https://api.allorigins.win/raw?url=';
-  const READ_URL=SCRIPT_URL;
-
   try{
-    const res=await fetch(PROXY+encodeURIComponent(READ_URL));
-    if(!res.ok) throw new Error('fetch failed '+res.status);
-    const raw=await res.json();
+    // allorigins /get returns {contents:"..."} — more reliable than /raw
+    const proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(SCRIPT_URL);
+    const res=await fetch(proxyUrl);
+    if(!res.ok) throw new Error('proxy '+res.status);
+    const json=await res.json();
+    const raw=JSON.parse(json.contents);
     const data=(Array.isArray(raw)?raw:[]).map(row=>({
       ts:     String(row['timestamp']||row['ts']||''),
       name:   String(row['name']||''),
+      date:   String(row['date']||''),
       attend: String(row['attend']||''),
       venues: String(row['venues']||''),
       message:String(row['message']||''),
     })).filter(d=>d.name);
     renderResults(data);
   }catch(e){
-    console.warn('CSV fetch failed:',e);
+    console.warn('Sheet read failed:',e);
     const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
     renderResults(data);
     list.insertAdjacentHTML('afterbegin',
-      `<div style="font-size:12px;color:rgba(252,165,165,.8);font-family:'Noto Serif KR',serif;margin-bottom:14px;padding:10px 14px;background:rgba(252,165,165,.07);border:1px solid rgba(252,165,165,.2);border-radius:10px">⚠️ 연결 실패 — 잠시 후 다시 시도해주세요</div>`);
+      `<div style="font-size:12px;color:rgba(252,165,165,.8);font-family:'Noto Serif KR',serif;margin-bottom:14px;padding:10px 14px;background:rgba(252,165,165,.07);border:1px solid rgba(252,165,165,.2);border-radius:10px">⚠️ 연결 실패 — 이 기기 응답만 표시됩니다</div>`);
   }
 }
 
-function parseCSV(csv){
-  const lines=csv.trim().split('\n');
-  if(lines.length<2) return [];
-  const headers=splitCSVRow(lines[0]);
-  return lines.slice(1).map(line=>{
-    const vals=splitCSVRow(line);
-    const obj={};
-    headers.forEach((h,i)=>{ obj[h.trim()]=vals[i]||''; });
-    return {
-      ts:     obj['timestamp']||obj['ts']||'',
-      name:   obj['name']||'',
-      attend: obj['attend']||'',
-      venues: obj['venues']||'',
-      message:obj['message']||'',
-    };
-  }).filter(d=>d.name);
-}
-
-function splitCSVRow(row){
-  const result=[]; let cur=''; let inQ=false;
-  for(let i=0;i<row.length;i++){
-    const c=row[i];
-    if(c==='"'){ inQ=!inQ; }
-    else if(c===','&&!inQ){ result.push(cur); cur=''; }
-    else{ cur+=c; }
-  }
-  result.push(cur);
-  return result;
-}
+function nameTag(n){ return `<span style="display:inline-block;background:rgba(131,88,255,.2);border:1px solid rgba(131,88,255,.4);border-radius:999px;padding:3px 12px;font-size:12px;font-family:'Noto Serif KR',serif;color:#fff;margin:3px 3px">${esc(n)}</span>`; }
 
 function renderResults(data){
-  document.getElementById('cnt-total').textContent=data.length;
-  document.getElementById('cnt-yes').textContent=data.filter(d=>d.attend==='yes').length;
-  document.getElementById('cnt-maybe').textContent=data.filter(d=>d.attend==='maybe').length;
+  // 날짜별
+  const d18=data.filter(d=>d.date==='18일(수)'||d.date==='둘다가능');
+  const d19=data.filter(d=>d.date==='19일(목)'||d.date==='둘다가능');
+  const attendable=d=>d.attend==='early'||d.attend==='late'||d.attend==='yes';
+  document.getElementById('date18-list').innerHTML=d18.filter(attendable).length
+    ? d18.filter(attendable).map(d=>nameTag(d.name)).join('')
+    : '<p style="font-size:13px;color:rgba(255,255,255,.3);font-family:\'Noto Serif KR\',serif">아직 없어요</p>';
+  document.getElementById('date19-list').innerHTML=d19.filter(attendable).length
+    ? d19.filter(attendable).map(d=>nameTag(d.name)).join('')
+    : '<p style="font-size:13px;color:rgba(255,255,255,.3);font-family:\'Noto Serif KR\',serif">아직 없어요</p>';
 
+  // 유형별
+  const types=[['early','🏃 바로 참석'],['late','🕐 늦게 합류'],['maybe','🤔 미정'],['no','😢 불참']];
+  document.getElementById('attend-by-type').innerHTML=types.map(([val,label])=>{
+    const names=data.filter(d=>d.attend===val);
+    return `<div style="margin-bottom:12px">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;font-weight:500">${label} <span style="color:rgba(131,88,255,.8)">${names.length}</span></div>
+      <div>${names.length ? names.map(d=>nameTag(d.name)).join('') : '<span style="font-size:12px;color:rgba(255,255,255,.25);font-family:\'Noto Serif KR\',serif">-</span>'}</div>
+    </div>`;
+  }).join('');
+
+  // 장소
   const vc={};
   data.forEach(d=>{if(!d.venues)return;d.venues.split(',').forEach(v=>{const k=v.trim();if(k)vc[k]=(vc[k]||0)+1;});});
   const maxV=Math.max(...Object.values(vc),1);
-  const chartHtml=Object.entries(vc).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
-    <div class="bar-row">
-      <div class="bar-label">${esc(VENUE_DISPLAY[k]||k)}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/maxV*100)}%"></div></div>
-      <div class="bar-count">${v}</div>
-    </div>`).join('');
-  document.getElementById('venue-chart').innerHTML=chartHtml||'<p style="font-size:13px;color:rgba(255,255,255,.3);font-family:\'Noto Serif KR\',serif">아직 데이터가 없어요</p>';
+  document.getElementById('venue-chart').innerHTML=Object.entries(vc).length
+    ? Object.entries(vc).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+      <div class="bar-row">
+        <div class="bar-label">${esc(VENUE_DISPLAY[k]||k)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/maxV*100)}%"></div></div>
+        <div class="bar-count">${v}</div>
+      </div>`).join('')
+    : '<p style="font-size:13px;color:rgba(255,255,255,.3);font-family:\'Noto Serif KR\',serif">아직 데이터가 없어요</p>';
 
+  // 개별 응답
   if(!data.length){
     document.getElementById('response-list').innerHTML='<div class="no-data"><span>💌</span>아직 응답이 없어요.<br>수요조사 링크를 공유해보세요!</div>';
     return;
   }
-  const badgeCls={yes:'badge-yes',no:'badge-no',maybe:'badge-maybe'};
+  const badgeCls={early:'badge-yes',late:'badge-maybe',no:'badge-no',maybe:'badge-maybe',yes:'badge-yes'};
   document.getElementById('response-list').innerHTML=[...data].reverse().map(d=>`
     <div class="response-item">
       <div class="resp-top">
         <div class="resp-name">${esc(d.name)}</div>
         <div class="resp-badge ${badgeCls[d.attend]||'badge-maybe'}">${ATTEND_LABEL[d.attend]||d.attend}</div>
       </div>
+      ${d.date?`<div class="resp-venues">📅 ${esc(d.date)}</div>`:''}
       ${d.venues?`<div class="resp-venues">📍 ${esc(d.venues)}</div>`:''}
       ${d.message?`<div class="resp-msg">"${esc(d.message)}"</div>`:''}
       <div class="resp-time">${esc(d.ts||'')}</div>
