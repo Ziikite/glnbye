@@ -419,10 +419,20 @@ const VENUE_DISPLAY={'맛집 (레스토랑/이자카야)':'🍽️ 맛집','루�
 async function loadResults(){
   const list=document.getElementById('response-list');
   list.innerHTML='<div class="no-data"><span style="font-size:32px">⏳</span>불러오는 중...</div>';
+  const proxies = [
+    () => fetch('https://corsproxy.io/?'+encodeURIComponent(SCRIPT_URL)).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}),
+    () => fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(SCRIPT_URL)).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}),
+    () => fetch('https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(SCRIPT_URL)).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}),
+    () => fetch(SCRIPT_URL,{mode:'cors'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}),
+  ];
+
+  let raw = null;
+  for(const tryProxy of proxies){
+    try{ raw = await tryProxy(); break; }
+    catch(e){ console.warn('proxy attempt failed:',e); }
+  }
+
   try{
-    const res=await fetch('https://corsproxy.io/?'+encodeURIComponent(SCRIPT_URL));
-    if(!res.ok) throw new Error('proxy '+res.status);
-    const raw=await res.json();
     const data=(Array.isArray(raw)?raw:[]).map(row=>({
       ts:     String(row['timestamp']||row['ts']||''),
       name:   String(row['name']||''),
@@ -431,6 +441,7 @@ async function loadResults(){
       venues: String(row['venues']||''),
       message:String(row['message']||''),
     })).filter(d=>d.name);
+    if(!raw) throw new Error('all proxies failed');
     renderResults(data);
   }catch(e){
     console.warn('Sheet read failed:',e);
