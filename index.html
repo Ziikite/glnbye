@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erin's Farewell Party 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+KR:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --violet: #8358FF;
+    --violet-light: #A882FF;
+    --violet-dark: #5A35CC;
+    --gold: #F5C842;
+    --gold-light: #FDE88A;
+    --cream: #FFF9F0;
+    --deep: #1A1230;
+    --blush: #FFE0EC;
+    --mint: #C8F5E8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    font-family: 'DM Sans', sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg-layer {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(131,88,255,.22) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(245,200,66,.10) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 60% 30%, rgba(200,245,232,.06) 0%, transparent 50%),
+      #1A1230;
+  }
+
+  /* ── CONFETTI CANVAS ── */
+  canvas#confetti {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1;
+  }
+
+  /* ── FLOATING ORBS ── */
+  .orb {
+    position: fixed; border-radius: 50%; filter: blur(70px); pointer-events: none; z-index: 0;
+    animation: float 8s ease-in-out infinite;
+  }
+  .orb1 { width:320px; height:320px; background:rgba(131,88,255,.18); top:-60px; left:-80px; animation-delay:0s; }
+  .orb2 { width:200px; height:200px; background:rgba(245,200,66,.12); bottom:10%; right:-40px; animation-delay:3s; }
+  .orb3 { width:150px; height:150px; background:rgba(200,245,232,.10); top:50%; left:60%; animation-delay:5s; }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  /* ── WRAPPER ── */
+  .page {
+    position: relative; z-index: 2;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 20px 0 50px;
+    animation: fadeUp .9s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(131,88,255,.25);
+    border: 1px solid rgba(131,88,255,.5);
+    color: var(--violet-light);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 999px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(8px);
+  }
+
+  .hero-emoji {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 16px;
+    animation: pop .6s cubic-bezier(.34,1.56,.64,1) both;
+    animation-delay: .3s;
+    filter: drop-shadow(0 0 24px rgba(245,200,66,.4));
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 8vw, 64px);
+    font-weight: 700;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--gold-light) 50%, var(--violet-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .hero-sub {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px;
+    color: rgba(255,255,255,.65);
+    font-weight: 300;
+    letter-spacing: .03em;
+    margin-bottom: 40px;
+  }
+
+  /* ── INFO CARDS ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+    animation: fadeUp .9s ease both;
+    animation-delay: .25s;
+  }
+  .info-grid .full { grid-column: 1 / -1; }
+
+  .info-card {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 18px;
+    padding: 22px 22px;
+    backdrop-filter: blur(12px);
+    transition: border-color .3s, background .3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .info-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(131,88,255,.07) 0%, transparent 60%);
+    border-radius: inherit;
+  }
+  .info-card:hover {
+    border-color: rgba(131,88,255,.4);
+    background: rgba(131,88,255,.08);
+  }
+
+  .info-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+  .info-label {
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--violet-light);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .info-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .info-note {
+    font-size: 12px;
+    color: rgba(255,255,255,.45);
+    margin-top: 4px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 16px;
+    margin: 48px 0 36px;
+    animation: fadeUp .9s ease both;
+    animation-delay: .35s;
+  }
+  .divider span { height: 1px; flex: 1; background: rgba(255,255,255,.12); }
+  .divider em {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: rgba(255,255,255,.4);
+    white-space: nowrap;
+  }
+
+  /* ── FORM CARD ── */
+  .form-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 24px;
+    padding: 36px 32px;
+    backdrop-filter: blur(16px);
+    animation: fadeUp .9s ease both;
+    animation-delay: .4s;
+  }
+
+  .form-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 6px;
+    color: #fff;
+  }
+  .form-desc {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 28px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .field { margin-bottom: 20px; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    padding: 13px 16px;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .25s, background .25s;
+    -webkit-appearance: none;
+  }
+  input::placeholder, textarea::placeholder { color: rgba(255,255,255,.28); }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--violet-light);
+    background: rgba(131,88,255,.08);
+  }
+  textarea { min-height: 90px; resize: vertical; }
+
+  select option { background: #2a1e4d; color: #fff; }
+
+  /* ── RADIO GROUP ── */
+  .radio-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .radio-option {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+  .radio-option:hover { border-color: rgba(131,88,255,.4); background: rgba(131,88,255,.08); }
+  .radio-option input[type="radio"] { display: none; }
+  .radio-dot {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: all .2s;
+    position: relative;
+  }
+  .radio-option input:checked ~ .radio-dot {
+    border-color: var(--violet-light);
+    background: var(--violet-light);
+  }
+  .radio-option input:checked ~ .radio-dot::after {
+    content: '';
+    position: absolute; inset: 3px;
+    background: var(--deep);
+    border-radius: 50%;
+  }
+  .radio-option input:checked ~ span { color: #fff; }
+  .radio-option span {
+    font-size: 13px;
+    color: rgba(255,255,255,.65);
+    transition: color .2s;
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 400;
+  }
+
+  /* ── CHECKBOXES ── */
+  .check-group { display: flex; flex-direction: column; gap: 9px; }
+  .check-option {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+  .check-option:hover { border-color: rgba(131,88,255,.4); background: rgba(131,88,255,.08); }
+  .check-option input[type="checkbox"] { display: none; }
+  .check-box {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-radius: 6px;
+    flex-shrink: 0;
+    transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .check-option input:checked ~ .check-box {
+    border-color: var(--violet-light);
+    background: var(--violet-light);
+  }
+  .check-option input:checked ~ .check-box::after {
+    content: '✓';
+    color: var(--deep);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .check-option input:checked ~ span { color: #fff; }
+  .check-option span {
+    font-size: 13px;
+    color: rgba(255,255,255,.65);
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 400;
+    transition: color .2s;
+    flex: 1;
+  }
+  .check-option .emoji { font-size: 16px; }
+
+  /* ── SUBMIT BUTTON ── */
+  .btn-submit {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-dark) 100%);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: .04em;
+    cursor: pointer;
+    margin-top: 28px;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+    box-shadow: 0 8px 32px rgba(131,88,255,.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-submit::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 60%);
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(131,88,255,.5); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* ── SUCCESS STATE ── */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeUp .6s ease both;
+  }
+  .success-screen.show { display: block; }
+  .success-emoji { font-size: 72px; margin-bottom: 20px; animation: pop .6s cubic-bezier(.34,1.56,.64,1) both; }
+  .success-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--gold-light), var(--violet-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .success-msg {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
+    color: rgba(255,255,255,.6);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 12px;
+    color: rgba(255,255,255,.25);
+    letter-spacing: .05em;
+    font-family: 'Noto Serif KR', serif;
+    animation: fadeUp .9s ease both;
+    animation-delay: .5s;
+  }
+  .footer strong { color: rgba(131,88,255,.6); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(.5); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── SPARKLE STARS ── */
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .star {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0; transform: scale(.5); }
+    50% { opacity: .8; transform: scale(1.5); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .radio-group { grid-template-columns: 1fr; }
+    .form-card { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<canvas id="confetti"></canvas>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Orbs -->
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="badge">✦ You're invited ✦</div>
+    <span class="hero-emoji">🥂</span>
+    <h1>Erin's<br>Farewell Party</h1>
+    <p class="hero-sub">GLN에서의 빛나는 시간을 함께 마무리해요</p>
+  </div>
+
+  <!-- INFO CARDS -->
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="info-icon">📅</span>
+      <div class="info-label">Date</div>
+      <div class="info-value">3월 18일<br><span style="font-size:14px;opacity:.7">Tuesday</span></div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🌇</span>
+      <div class="info-label">Time</div>
+      <div class="info-value">퇴근 후</div>
+      <div class="info-note">시간은 추후 확정 예정</div>
+    </div>
+    <div class="info-card full">
+      <span class="info-icon">📍</span>
+      <div class="info-label">Venue</div>
+      <div class="info-value">수요조사 후 장소 예약 예정</div>
+      <div class="info-note">여러분의 의견을 반영해서 결정할게요 🙏</div>
+    </div>
+  </div>
+
+  <div class="divider">
+    <span></span>
+    <em>참석 여부를 알려주세요</em>
+    <span></span>
+  </div>
+
+  <!-- RSVP FORM -->
+  <div class="form-card">
+    <div class="form-title">수요조사</div>
+    <p class="form-desc">소중한 응답이 장소 예약에 큰 도움이 돼요 ✨<br>3월 15일(토)까지 남겨주세요!</p>
+
+    <div id="rsvp-form">
+
+      <!-- 이름 -->
+      <div class="field">
+        <label>이름 / Name</label>
+        <input type="text" id="name" placeholder="이름을 입력해주세요" autocomplete="off">
+      </div>
+
+      <!-- 참석 여부 -->
+      <div class="field">
+        <label>참석 여부</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="attend" value="yes">
+            <span class="radio-dot"></span>
+            <span>🙋 참석할게요!</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="attend" value="no">
+            <span class="radio-dot"></span>
+            <span>😢 아쉽지만 불참</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="attend" value="maybe">
+            <span class="radio-dot"></span>
+            <span>🤔 미정이에요</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 장소 선호도 -->
+      <div class="field" id="venue-pref-wrap">
+        <label>선호하는 장소 유형 (복수 선택 가능)</label>
+        <div class="check-group">
+          <label class="check-option">
+            <input type="checkbox" name="venue" value="restaurant">
+            <span class="check-box"></span>
+            <span>🍽️ 맛집 (레스토랑 / 이자카야)</span>
+          </label>
+          <label class="check-option">
+            <input type="checkbox" name="venue" value="rooftop">
+            <span class="check-box"></span>
+            <span>🌃 루프탑 바 / 감성 바</span>
+          </label>
+          <label class="check-option">
+            <input type="checkbox" name="venue" value="karaoke">
+            <span class="check-box"></span>
+            <span>🎤 노래방</span>
+          </label>
+          <label class="check-option">
+            <input type="checkbox" name="venue" value="lounge">
+            <span class="check-box"></span>
+            <span>🍸 라운지 / 칵테일 바</span>
+          </label>
+          <label class="check-option">
+            <input type="checkbox" name="venue" value="any">
+            <span class="check-box"></span>
+            <span>😊 Erin이 정하는 대로!</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 예산 -->
+      <div class="field">
+        <label>1인 예산 범위 (식사 + 음료 포함)</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="budget" value="under3">
+            <span class="radio-dot"></span>
+            <span>3만원 이하</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="budget" value="3to5">
+            <span class="radio-dot"></span>
+            <span>3~5만원</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="budget" value="5to8">
+            <span class="radio-dot"></span>
+            <span>5~8만원</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="budget" value="any">
+            <span class="radio-dot"></span>
+            <span>상관없어요</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 메시지 -->
+      <div class="field">
+        <label>Erin에게 한 마디 💌 (선택)</label>
+        <textarea id="message" placeholder="응원 메시지나 요청 사항을 남겨주세요 :)"></textarea>
+      </div>
+
+      <button class="btn-submit" onclick="submitForm()">✉️ &nbsp; 응답 제출하기</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="success">
+      <div class="success-emoji">🎊</div>
+      <div class="success-title">응답 완료!</div>
+      <p class="success-msg">
+        참여해 주셔서 감사해요 💜<br>
+        수요조사 결과를 바탕으로<br>
+        장소를 확정 후 다시 안내드릴게요!<br><br>
+        <span style="color:rgba(255,255,255,.4);font-size:13px;">3월 18일에 만나요 🥂</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>Made with 💜 for <strong>Erin Kim</strong>'s Farewell · GLN International 2025</p>
+  </div>
+</div>
+
+<script>
+// ── STARS ──
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+    s.style.setProperty('--delay', (Math.random() * 5) + 's');
+    const size = Math.random() * 2.5 + 1;
+    s.style.width = size + 'px'; s.style.height = size + 'px';
+    container.appendChild(s);
+  }
+})();
+
+// ── CONFETTI ──
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+let pieces = [];
+let confettiActive = false;
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function spawnConfetti(n = 120) {
+  const colors = ['#8358FF','#F5C842','#FF6B9D','#C8F5E8','#A882FF','#FDE88A','#fff'];
+  for (let i = 0; i < n; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * 200,
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: 6 + Math.random() * 10,
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random() - 0.5) * 0.2,
+      shape: Math.random() > 0.5 ? 'rect' : 'circle',
+      alpha: 1,
+    });
+  }
+}
+
+function drawConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  pieces = pieces.filter(p => p.alpha > 0.01);
+  pieces.forEach(p => {
+    ctx.save();
+    ctx.globalAlpha = p.alpha;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = p.color;
+    if (p.shape === 'rect') ctx.fillRect(-p.size/2, -p.size/4, p.size, p.size/2);
+    else { ctx.beginPath(); ctx.arc(0, 0, p.size/2, 0, Math.PI*2); ctx.fill(); }
+    ctx.restore();
+    p.x += p.vx; p.y += p.vy;
+    p.rot += p.rotV;
+    p.vy += 0.08;
+    if (p.y > canvas.height) p.alpha -= 0.04;
+  });
+  if (confettiActive || pieces.length > 0) requestAnimationFrame(drawConfetti);
+}
+
+// ── FORM SUBMIT ──
+function submitForm() {
+  const name = document.getElementById('name').value.trim();
+  const attend = document.querySelector('input[name="attend"]:checked');
+
+  if (!name) { flash(document.getElementById('name')); return; }
+  if (!attend) { alert('참석 여부를 선택해주세요 😊'); return; }
+
+  // Collect data (in a real deployment, send to backend/Google Forms)
+  const data = {
+    name,
+    attend: attend.value,
+    venues: [...document.querySelectorAll('input[name="venue"]:checked')].map(el => el.value),
+    budget: (document.querySelector('input[name="budget"]:checked') || {}).value || null,
+    message: document.getElementById('message').value.trim(),
+    ts: new Date().toISOString()
+  };
+  console.log('RSVP:', data); // In production, POST this to your endpoint
+
+  // UI transition
+  document.getElementById('rsvp-form').style.display = 'none';
+  document.getElementById('success').classList.add('show');
+
+  // 🎊 Confetti!
+  confettiActive = true;
+  spawnConfetti(200);
+  drawConfetti();
+  setTimeout(() => { confettiActive = false; }, 3000);
+}
+
+function flash(el) {
+  el.style.borderColor = '#FF6B9D';
+  el.style.boxShadow = '0 0 0 3px rgba(255,107,157,.25)';
+  el.focus();
+  setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 1800);
+}
+</script>
+</body>
+</html>
