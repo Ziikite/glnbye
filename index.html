@@ -308,7 +308,7 @@
 <script>
 // ══ CONFIG ══
 // Google Apps Script URL로 교체하세요 (설정 가이드는 README 참고)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwO90UsHHrwXbA0Oso7tf7NpTUslsY4M49eCsIt1BydjwLuR04je-o2fyksWs7bCZFa/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBVQ4ZcRvMOyjQaTOUQrbvuyWC0pgZLOEeH0BfwiriPKhhMnPeDq9Y1aS-vJaZGXAc/exec';
 const STORAGE_KEY = 'farewell_rsvp_v2';
 
 // ── STARS ──
@@ -386,10 +386,27 @@ function flash(el){el.style.borderColor='#FF6B9D';el.style.boxShadow='0 0 0 3px 
 const ATTEND_LABEL={yes:'참석 🙋',no:'불참 😢',maybe:'미정 🤔'};
 const VENUE_DISPLAY={'맛집 (레스토랑/이자카야)':'🍽️ 맛집','루프탑 바/감성 바':'🌃 루프탑/감성 바','노래방':'🎤 노래방','라운지/칵테일 바':'🍸 라운지/칵테일 바','Erin이 정하는 대로':'😊 Erin에게 맡김'};
 
-function loadResults(){
+async function loadResults(){
   document.getElementById('setup-banner').style.display='none';
-  const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
-  renderResults(data);
+  const list=document.getElementById('response-list');
+  list.innerHTML='<div class="no-data"><span style="font-size:32px">⏳</span>불러오는 중...</div>';
+  try{
+    const res=await fetch(SCRIPT_URL+'?t='+Date.now());
+    const raw=await res.json();
+    const data=raw.map(row=>({
+      ts:     row['timestamp']||row['ts']||'',
+      name:   row['name']||'',
+      attend: row['attend']||'',
+      venues: row['venues']||'',
+      message:row['message']||'',
+    }));
+    renderResults(data);
+  }catch(e){
+    console.warn('Sheet fetch failed, fallback to localStorage:',e);
+    const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+    renderResults(data);
+    list.insertAdjacentHTML('afterbegin','<div style="font-size:12px;color:rgba(252,165,165,.8);font-family:\'Noto Serif KR\',serif;margin-bottom:14px;padding:10px 14px;background:rgba(252,165,165,.07);border:1px solid rgba(252,165,165,.2);border-radius:10px">⚠️ 시트 연결 실패 — 이 기기의 응답만 표시돼요</div>');
+  }
 }
 
 function renderResults(data){
