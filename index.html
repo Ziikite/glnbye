@@ -308,7 +308,7 @@
 <script>
 // ══ CONFIG ══
 // Google Apps Script URL로 교체하세요 (설정 가이드는 README 참고)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9_TkVR7IODcPvZp1x6dX65Ps0Yn4cax7hDUKSqIode8OkoutJeI7Cx8bBqWyhVugi/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZNBjT8Had4gIUyt2-Pf7j75v9hgWXhuaRrXAQqh35ZWnT7ILtiaZEEBt3MngdJxmw/exec';
 const STORAGE_KEY = 'farewell_rsvp_v2';
 
 // ── STARS ──
@@ -369,7 +369,7 @@ async function submitForm(){
   const stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
   stored.push(entry); localStorage.setItem(STORAGE_KEY,JSON.stringify(stored));
 
-  // Google Sheets — iframe hidden form POST (CORS 우회)
+  // Google Sheets POST
   await postToSheet(entry);
 
   document.getElementById('rsvp-form').style.display='none';
@@ -379,36 +379,19 @@ async function submitForm(){
 }
 function flash(el){el.style.borderColor='#FF6B9D';el.style.boxShadow='0 0 0 3px rgba(255,107,157,.25)';el.focus();setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},1800);}
 
-// ── SHEET POST (hidden iframe form — CORS 완전 우회) ──
-function postToSheet(entry){
-  return new Promise(resolve=>{
-    const iframe=document.createElement('iframe');
-    iframe.name='_sheet_iframe_'+Date.now();
-    iframe.style.display='none';
-    document.body.appendChild(iframe);
-
-    const form=document.createElement('form');
-    form.method='POST';
-    form.action=SCRIPT_URL;
-    form.target=iframe.name;
-    form.style.display='none';
-
-    // Apps Script는 e.parameter로 form fields를 받음
-    const fields={ts:entry.ts, name:entry.name, attend:entry.attend, venues:entry.venues, message:entry.message};
-    Object.entries(fields).forEach(([k,v])=>{
-      const input=document.createElement('input');
-      input.type='hidden'; input.name=k; input.value=v||'';
-      form.appendChild(input);
+// ── SHEET POST (GET 방식으로 우회) ──
+async function postToSheet(entry){
+  try{
+    const params=new URLSearchParams({
+      action: 'write',
+      ts:      entry.ts,
+      name:    entry.name,
+      attend:  entry.attend,
+      venues:  entry.venues,
+      message: entry.message
     });
-
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(()=>{
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-      resolve();
-    },2000);
-  });
+    await fetch(SCRIPT_URL+'?'+params.toString(), {mode:'no-cors'});
+  }catch(e){ console.warn('POST failed:',e); }
 }
 
 // ── RESULTS ──
@@ -420,14 +403,20 @@ async function loadResults(){
   const list=document.getElementById('response-list');
   list.innerHTML='<div class="no-data"><span style="font-size:32px">⏳</span>불러오는 중...</div>';
 
-  const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vRWJ49b9Fn3Aebuj67NEljWwiaOsUxG52y9zueDXtMTUtxNU3fnoBmE4Fr7eDoRkC6PJT4gQsNvHh3S/pub?gid=0&single=true&output=csv';
   const PROXY='https://api.allorigins.win/raw?url=';
+  const READ_URL=SCRIPT_URL;
 
   try{
-    const res=await fetch(PROXY+encodeURIComponent(CSV_URL));
+    const res=await fetch(PROXY+encodeURIComponent(READ_URL));
     if(!res.ok) throw new Error('fetch failed '+res.status);
-    const csv=await res.text();
-    const data=parseCSV(csv);
+    const raw=await res.json();
+    const data=(Array.isArray(raw)?raw:[]).map(row=>({
+      ts:     String(row['timestamp']||row['ts']||''),
+      name:   String(row['name']||''),
+      attend: String(row['attend']||''),
+      venues: String(row['venues']||''),
+      message:String(row['message']||''),
+    })).filter(d=>d.name);
     renderResults(data);
   }catch(e){
     console.warn('CSV fetch failed:',e);
